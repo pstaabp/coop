@@ -1,0 +1,20 @@
+{
+  "name": "babysitting-coop",
+  "description": "JP Babysitting Co-op",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "node app"
+  },
+  "dependencies": {
+    "express": "*",
+    "jade": "*",
+    "style": "*",
+    "connect": "*",
+    "connect-mongodb": "*",
+    "connect-timeout": "*",
+    "mongoose": "*",
+    "cookie-sessions": "*",
+    "underscore": "*"
+  }
+}

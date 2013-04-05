@@ -1,0 +1,25 @@
+!!!
+html
+  head
+    title JP Babysitting Co-op
+    link(href='/conference-submission/stylesheets/bootstrap.min.css',rel='stylesheet',media="screen")
+    link(href='/conference-submission/stylesheets/style.css',rel='stylesheet')
+    block script
+  body
+    div.container-fluid
+      div.navbar
+        div.navbar-inner
+          a.brand(href="#") JP Babysitting Co-op
+          span.navbar-text.pull-right.span7
+            - if (typeof(user)!=="undefined"){
+              span.span2 Welcome #{user.first_name}   
+            -}
+            div.span2.btn-group.all-users#act-as-user(style="display: none")
+            a.btn.span1#logout Log Out
+            a.btn.span1#help-link Help
+      #container
+        block container
+    
+    block templates
+
+    
