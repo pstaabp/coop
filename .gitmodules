@@ -1,0 +1,30 @@
+[submodule "public/javascript/bootstrap"]
+	path = public/javascript/bootstrap
+	url = https://github.com/twitter/bootstrap
+[submodule "public/vendor/underscore"]
+	path = public/vendor/underscore
+	url = https://github.com/documentcloud/underscore.git
+[submodule "public/vendor/requirejs"]
+	path = public/vendor/requirejs
+	url = https://github.com/jrburke/requirejs.git
+[submodule "public/vendor/bootstrap"]
+	path = public/vendor/bootstrap
+	url = https://github.com/twitter/bootstrap.git
+[submodule "public/vendor/backbone"]
+	path = public/vendor/backbone
+	url = https://github.com/documentcloud/backbone.git
+[submodule "public/vendor/jquery"]
+	path = public/vendor/jquery
+	url = https://github.com/jquery/jquery.git
+[submodule "public/vendor/xdate"]
+	path = public/vendor/xdate
+	url = https://github.com/arshaw/xdate.git
+[submodule "public/vendor/stickit"]
+	path = public/vendor/stickit
+	url = https://github.com/NYTimes/backbone.stickit.git
+[submodule "public/vendor/backbone-validation"]
+	path = public/vendor/backbone-validation
+	url = https://github.com/thedersen/backbone.validation.git
+[submodule "public/vendor/bootstrap-datepicker"]
+	path = public/vendor/bootstrap-datepicker
+	url = git://github.com/eternicode/bootstrap-datepicker.git

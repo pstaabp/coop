@@ -13,8 +13,14 @@ function defineModels(mongoose, fn) {
    **/
 
   var Family = new Schema({
-    parent: Array,
-    children: Array,
+    name: String,
+    parents: String,
+    children: String,
+    email: String,
+    date_joined: Date,
+    active: Boolean,
+    starting_points: Number,
+    current_points: Number
   });
 
   /** Transaction

@@ -1,0 +1,139 @@
+extends ./layout
+
+block script
+  script(type='text/javascript',data-main='/coop/javascripts/apps/AdminPage',src='/coop/javascripts/require.js')
+  
+block container
+  ul.nav.nav-tabs#admin-tabs
+    li
+      a(href="#new-transaction",data-toggle="tab",data-view="newTransactionView") New Transaction
+    li.active
+      a(href="#view-families",data-toggle="tab",data-view="familiesView") View Families
+    li
+      a(href="#add-family",data-toggle="tab",data-view="addFamilyView") Add Family
+    li
+      a(href="#transactions",data-toggle="tab",data-view="transactionsView") View Transactions
+    li
+      a(href="#settings",data-toggle="tab",data-view="settingsView") Settings
+    
+    
+      
+  .tab-content
+    .tab-pane#new-transaction
+      table.table.table-bordered#new-transaction-table
+        thead
+          tr
+            th Transfer From
+            th Transfer To
+            th Points
+            th Transfer Date
+        tbody
+          tr
+            td
+              select#family-from
+                option
+            td
+              select#family-to
+                option
+            td
+              input#points(type="text")
+            td
+              input#trans-date
+          tr
+            td(colspan="4")
+              button.btn#new-transaction-button Save Transaction
+
+
+    .tab-pane#view-families.active
+
+      label.radio.inline 
+        input(type='radio',name='showType',value='all') 
+        | Show All Families
+      label.radio.inline 
+        input(type='radio',name='showType',value='active',checked) 
+        | Active Families
+      label.radio.inline
+        input(type='radio',name='showType',value='inactive') 
+        | Inactive Families
+        
+      table.table.table-bordered#allFamilyTable
+        thead
+          tr
+            th Active
+            th Family Name
+            th Email
+            th Parents
+            th Children
+            th Date Joined
+            th Starting Points
+        tbody
+
+    .tab-pane#add-family
+      h4 Add a Family
+      table.table.table-bordered.span10
+        tr
+          td.header.span2 Family Name
+          td.span3
+            input#name.span3(type="text")
+          td.header.span2 Email(s)
+          td.span3
+            input#email.span3(type="text")
+
+        tr
+          td.header.span2 Parent(s)
+          td.span3
+            input#parents.span3(type="text")
+          td.header.span2 Children
+          td.span3
+            input#children.span3(type="text")
+        tr
+          td.header.span2 Date Joined
+          td.span3.input-append.date
+            input#date-joined.span2(type="text",readonly)
+            span.add-on
+              i.icon-calendar
+          td.header.span2 Starting Points
+          td.span3
+            input#starting-points
+        tr
+          td
+          td
+          td
+          td
+            button.btn#add-family-button  Add Family
+            
+    .tab-pane#transactions
+    .tab-pane#settings
+      table.table.table-bordered#settings-table
+        thead
+          tr
+            th Setting Name
+            th Value
+            th Description
+
+        tbody
+    
+block templates
+  script#all-family-row-template(type="text/template")
+    td
+      input.active(type="checkbox")
+    td.editable.name(contenteditable="true")
+    td.editable.email(contenteditable="true")
+    td.editable.parents(contenteditable="true")
+    td.editable.children(contenteditable="true")
+    td
+      div.input-append.date.date-joined(data-date-format="mm/dd/yyyy")
+        input.span2(readonly)
+        span.add-on
+          i.icon-calendar
+    td.editable.starting-points(contenteditable="true")
+
+  script#help-text(type='text/template')
+    p
+      | Help text!!
+  script(type="text/javascript")
+    define('config', function() {
+      return {
+        families: !{JSON.stringify(families)}
+      };
+    });
