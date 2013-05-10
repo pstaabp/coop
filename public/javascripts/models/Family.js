@@ -1,4 +1,4 @@
-define(['Backbone', 'underscore','./TransactionList'], function(Backbone, _,TransactionList){
+define(['Backbone', 'underscore','./TransactionList','moment'], function(Backbone, _,TransactionList){
     /**
      *
      * This defines a Family
@@ -12,7 +12,7 @@ define(['Backbone', 'underscore','./TransactionList'], function(Backbone, _,Tran
             parents: "",
             children: "",
             email: "",
-            date_joined: "",
+            date_joined: moment(),
             active: true,
             starting_points: 0
         },
@@ -26,9 +26,7 @@ define(['Backbone', 'underscore','./TransactionList'], function(Backbone, _,Tran
         },
         url : function() {
             var base = '/coop/families';
-            console.log(base + (base.charAt(base.length - 1) == '/' ? '' : '/') + this.id);
             if (this.isNew()) return base;
-            
             return base + (base.charAt(base.length - 1) == '/' ? '' : '/') + this.id;
         },
         idAttribute: "_id",

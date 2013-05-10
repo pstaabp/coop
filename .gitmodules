@@ -16,9 +16,6 @@
 [submodule "public/vendor/jquery"]
 	path = public/vendor/jquery
 	url = https://github.com/jquery/jquery.git
-[submodule "public/vendor/xdate"]
-	path = public/vendor/xdate
-	url = https://github.com/arshaw/xdate.git
 [submodule "public/vendor/stickit"]
 	path = public/vendor/stickit
 	url = https://github.com/NYTimes/backbone.stickit.git
@@ -28,3 +25,6 @@
 [submodule "public/vendor/bootstrap-datepicker"]
 	path = public/vendor/bootstrap-datepicker
 	url = git://github.com/eternicode/bootstrap-datepicker.git
+[submodule "public/vendor/moment"]
+	path = public/vendor/moment
+	url = https://github.com/timrwood/moment.git

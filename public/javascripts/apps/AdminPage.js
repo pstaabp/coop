@@ -5,10 +5,10 @@ require.config({
       "underscore":           "../underscore-min",
       "jquery":               "../jquery",
       "bootstrap":            "../bootstrap.min",
-      "XDate":                "../xdate",
       "backbone-validation":  "../backbone-validation.min",
       "stickit":              "../backbone.stickit",
-      "bootstrap-datepicker": "../bootstrap-datepicker"
+      "bootstrap-datepicker": "../bootstrap-datepicker",
+      "moment":               "../moment"
    },
    urlArgs: "bust=" +  (new Date()).getTime(),
    waitSeconds: 15,
@@ -17,7 +17,6 @@ require.config({
       'Backbone': { deps: ['underscore', 'jquery'], exports: 'Backbone'},
       'bootstrap':['jquery'],
       'backbone-validation': ['Backbone'],
-      'XDate':{ exports: 'XDate'},
       'backbone-validation': {deps: ['Backbone', 'jquery','underscore']},
       'bootstrap-datepicker': {deps: ['bootstrap']},
       'stickit': {deps: ['Backbone','jquery','underscore']},
@@ -25,11 +24,12 @@ require.config({
 });
 
 require(['globals', 'Backbone', 'underscore','../views/WebPage','../models/Family','../models/FamilyList','../models/TransactionList', 
-         '../models/Transaction','./common','XDate','bootstrap','stickit','backbone-validation','bootstrap-datepicker'],
-function(globals, Backbone, _, WebPage, Family, FamilyList, TranasactionList, Transaction,common, XDate){
+         '../models/Transaction','./AllFamilyView','./AddFamilyView',  './common','bootstrap','stickit','backbone-validation','bootstrap-datepicker'],
+function(globals, Backbone, _, WebPage, Family, FamilyList, TranasactionList, Transaction,AllFamilyView,AddFamilyView, common, XDate){
 
    var AdminPage = WebPage.extend({
       initialize: function () {
+         var self = this;
          this.constructor.__super__.initialize.apply(this, {el: this.el});
          _.bindAll(this,"render");
          
@@ -37,20 +37,31 @@ function(globals, Backbone, _, WebPage, Family, FamilyList, TranasactionList, Tr
 
          this.families = (globals.families)? new FamilyList(globals.families) : new FamilyList(); 
 
-         this.addTransactionView = new AddTransactionView({parent: this, el: $("#new-transaction")});
-         this.addFamilyView = new AddFamilyView({parent: this, el: $("#add-family")});
-         this.allFamilyView = new AllFamilyView({parent: this, el: $("#view-families")});
-         this.render();
-      },
-      render: function () {
+         this.families.on("add",function(model){
+            self.announce.addMessage("Added the " + model.get("name") + " family.");
+         });
+
+         this.families.on("update",function(model){
+            self.announce.addMessage("Updated the " + model.get("name") + " family.");
+         })
+
+         this.views = {
+            addTransactionView :  new AddTransactionView({families: this.families, el: $("#new-transaction")}),
+            addFamilyView : new AddFamilyView({parent: this, families: this.families, el: $("#add-family")}),
+            allFamilyView : new AllFamilyView({parent: this, el: $("#view-families")})
+         }
          this.constructor.__super__.render.apply(this);  // Call  WebPage.render(); 
+         this.views.allFamilyView.render();
+      },
+      render: function (evt) {
+         console.log($(evt.target).data("view"));
 
-         this.addTransactionView.render();
-         this.addFamilyView.render();
-         this.allFamilyView.render();
+         this.views[$(evt.target).data("view")].render();
+         
 
+      }, 
+      events: { "shown #admin-tabs a": "render"}
 
-      }
     });
 
    var AddTransactionView = Backbone.View.extend({
@@ -58,9 +69,15 @@ function(globals, Backbone, _, WebPage, Family, FamilyList, TranasactionList, Tr
          _.bindAll(this,"render");
          this.parent = this.options.parent;
          this.model = new Transaction();
+         this.families = this.options.families;
+
+         this.familyList = this.families.map(function(family) {return {name: family.get("name"), id: family.id}});
+         this.familyList.unshift({name: "Secretary", id: "0"});
       },
       render: function () {
-         var dateJoined = $("#trans-date");
+          var dateJoined = this.$(".transaction-date").parent();
+         dateJoined.attr("data-date",this.model.get("transaction_date").format("MM/DD/YYYY"));
+         
          dateJoined.datepicker().on("changeDate", function (evt) { 
             dateJoined.datepicker("hide");
             dateJoined.datepicker("setValue",evt.date);
@@ -75,172 +92,37 @@ function(globals, Backbone, _, WebPage, Family, FamilyList, TranasactionList, Tr
       },
       bindings: {
          'select#family-from': {
-            observe: 'from',
+            observe: 'from_family',
             selectOptions: {
-              collection: 'this.parent.families',
+              collection: 'this.familyList',
               labelPath: 'name',
-              valuePath: 'name',
+              valuePath: 'id',
               defaultOption: {label: "Choose one...", value: null}
             }
          },
          'select#family-to': {
-            observe: 'to',
+            observe: 'to_family',
             selectOptions: {
-              collection: 'this.parent.families',
+              collection: 'this.familyList',
               labelPath: 'name',
-              valuePath: 'name',
+              valuePath: 'id',
               defaultOption: {label: "Choose one...", value: null}
             }
          },
          "#points": "points",
-         "#trans-date": { 
-            observe: "date",
-            onSet: function(value, options) { return new Date(value);}, 
-            events: ['changeDate']
-         }
-      }
-   });
-
-   var AllFamilyView = Backbone.View.extend({
-      initialize: function() {
-         _.bindAll(this,"render");
-         this.parent = this.options.parent;
-         this.rowTemplate = _.template($("#all-family-row-template").html());
-         this.parent.families.on("remove",this.render);
-      },
-      render: function (){
-         var self = this;
-
-         // determine what view is selected
-
-         var whichFamilies = this.$("input[type='radio']:checked").val()
-           , selectedFamilies;
-
-         switch(whichFamilies){
-            case "active": selectedFamilies = this.parent.families.filter(function(family) { return family.get("active") === true});
-            break;
-            case "inactive": selectedFamilies = this.parent.families.filter(function(family) { return family.get("active") === false});
-            break;
-            case "all": selectedFamilies = this.parent.families.filter(function(family) { return true});
-            break;
-         }
-
-         var allFamilyTable  = this.$("#allFamilyTable tbody");
-         allFamilyTable.html("");
-         _(selectedFamilies).each(function(family){ 
-            allFamilyTable.append((new AllFamilyRowView({rowTemplate: self.rowTemplate, model: family})).render().el);
-         });
-      },
-      events: {"change input[type='radio']": "render"}
-   });
-
-   var AllFamilyRowView = Backbone.View.extend({
-      tagName: "tr",
-      initialize: function() {
-         var self = this;
-         _.bindAll(this,"render","deleteFamily","save");
-         this.rowTemplate = this.options.rowTemplate;
-         this.model.on("change:date_joined", function(model){
-            console.log(model.attributes);
-            //model.set({date_joined: }, {silent: true})
-            self.model.save();
-         })
-      },
-      render: function() {
-         var self = this;
-         this.$el.html(this.rowTemplate);
-         
-         var dateJoined = this.$(".date-joined input");
-         dateJoined.datepicker().on("changeDate", function (evt) { 
-            dateJoined.datepicker("hide");
-            dateJoined.datepicker("setValue",(new XDate(evt.date)).toString("MM/dd/yyyy"));
-         });
-         this.stickit();
-         return this;
-      },
-      bindings: {
-         ".active": "active",
-         ".name": "name",
-         ".email": "email",
-         ".parents": "parents", 
-         ".children": "children",
-         ".starting-points": "starting_points",
-         ".date-joined input": {observe: "date_joined",
-            onGet: function(value, options) { return (new XDate(value)).toString("MM/dd/yyyy");},
-            onSet: function(value,options) { return new XDate(value).toISOString();},
-            events: ['changeDate']
-         }
-      },
-      events: {"click span.add-on": "showDatepicker",
-               "click .delete-family": "deleteFamily",
-               "blur td.editable": "save"
+         ".transaction-date": { 
+            observe: "transaction_date",
+            onGet: function(value, options) { 
+               return moment(value).format("MM/DD/YYYY");
             },
-      save: function (evt) {
-         this.model.save();
-      },
-      showDatepicker: function (){
-         this.$(".date-joined input").datepicker("show");
-      },
-      deleteFamily: function(){
-         var del = confirm("Do you want to delete the " + this.model.get("name") + " family");
-         if(del){
-            this.model.destroy();
+            onSet: function(value,options) { 
+               //console.log(value);
+               return moment(value).utc().format();
+            },
+
+            events: ['change']
          }
       }
-   });
-
-   var AddFamilyView = Backbone.View.extend({
-      initialize: function (){
-         var self = this; 
-         _.bindAll(this,"render");
-         
-         this.model = new Family();
-         this.model.bind('validated:invalid', function(model, errors) {
-           var selectors = _(self.bindings).invert();
-            _(errors).chain().keys().each(function(key) {
-                  if(_.isObject(key)){
-                     key = key.observe;
-                  }
-                  self.errorPane.addMessage(errors[key]); 
-                  console.log(selectors[key]);
-                  this.$(selectors[key]).css("background-color","pink");
-               });
-
-           console.log(errors);
-           console.log(model);
-         });
-
-         this.model.on("update", function(model){
-            console.log(model);
-         })
-      },
-      render: function (){
-         var self = this;
-         this.errorPane = this.options.parent.errorPane;
-         var dateJoined = $("#date-joined");
-         dateJoined.datepicker().on("changeDate", function (evt) { 
-            dateJoined.datepicker("hide");
-            dateJoined.datepicker("setValue",evt.date);
-         });
-         Backbone.Validation.bind(this);
-         this.stickit();
-      },
-      bindings: {
-         "#name":  "name",
-         "#email": "email",
-         "#parents": "parents",
-         "#children": "children",
-         "#starting-points": "starting_points",
-         "#date-joined": { 
-            observe: "date_joined",
-            onSet: function(value, options) { return new Date(value);}, 
-            events: ['changeDate']
-         }
-      },
-      events: {"click button#add-family-button": "addFamily"},
-      addFamily: function () {
-         this.model.save();
-      },
    });
 
     new AdminPage({el: $("#container")});

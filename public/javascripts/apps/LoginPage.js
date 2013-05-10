@@ -5,7 +5,7 @@ require.config({
       "underscore":           "../underscore-min",
       "jquery":               "../jquery.min",
       "bootstrap":            "../bootstrap.min",
-      "XDate":                "../xdate",
+      "moment":               "../moment"
    },
    urlArgs: "bust=" +  (new Date()).getTime(),
    waitSeconds: 15,
@@ -14,7 +14,6 @@ require.config({
       'Backbone': { deps: ['underscore', 'jquery'], exports: 'Backbone'},
       'bootstrap':['jquery'],
       'backbone-validation': ['Backbone'],
-      'XDate':{ exports: 'XDate'},
    }
 });
 

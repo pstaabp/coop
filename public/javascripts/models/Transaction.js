@@ -1,4 +1,4 @@
-define(['Backbone', 'underscore'], function(Backbone, _){
+define(['Backbone', 'underscore','moment'], function(Backbone, _){
     /**
      *
      * This defines a Family
@@ -8,11 +8,12 @@ define(['Backbone', 'underscore'], function(Backbone, _){
 
     var Transaction = Backbone.Model.extend({
     	defaults: {
-    		from: null,
-    		to: null,
+    		from_family: null,
+    		to_family: null,
     		points: 0,
-    		date: null,
-    	}
+    		transaction_date: moment(),
+    	},
+        validation: {pattern: /^\d+(\.[0|5])?$/, msg: "The number of points must be either whole or half points."}
     });
 
 

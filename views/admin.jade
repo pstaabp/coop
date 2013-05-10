@@ -6,13 +6,13 @@ block script
 block container
   ul.nav.nav-tabs#admin-tabs
     li
-      a(href="#new-transaction",data-toggle="tab",data-view="newTransactionView") New Transaction
+      a(href="#new-transaction",data-toggle="tab",data-view="addTransactionView") New Transaction
     li.active
-      a(href="#view-families",data-toggle="tab",data-view="familiesView") View Families
+      a(href="#view-families",data-toggle="tab",data-view="allFamilyView") View Families
     li
       a(href="#add-family",data-toggle="tab",data-view="addFamilyView") Add Family
     li
-      a(href="#transactions",data-toggle="tab",data-view="transactionsView") View Transactions
+      a(href="#transactions",data-toggle="tab",data-view="allTransactionsView") View Transactions
     li
       a(href="#settings",data-toggle="tab",data-view="settingsView") Settings
     
@@ -29,6 +29,11 @@ block container
             th Transfer Date
         tbody
           tr
+            td.span3
+              div.input-append.date(data-date-format="mm/dd/yyyy")
+                input.transaction-date.span2(readonly)
+                span.add-on
+                  i.icon-calendar
             td
               select#family-from
                 option
@@ -37,8 +42,7 @@ block container
                 option
             td
               input#points(type="text")
-            td
-              input#trans-date
+            
           tr
             td(colspan="4")
               button.btn#new-transaction-button Save Transaction
@@ -74,27 +78,28 @@ block container
         tr
           td.header.span2 Family Name
           td.span3
-            input#name.span3(type="text")
+            input.name.span3
           td.header.span2 Email(s)
           td.span3
-            input#email.span3(type="text")
+            input.email.span3
 
         tr
           td.header.span2 Parent(s)
           td.span3
-            input#parents.span3(type="text")
+            input.parents.span3
           td.header.span2 Children
           td.span3
-            input#children.span3(type="text")
+            input.children.span3
         tr
           td.header.span2 Date Joined
-          td.span3.input-append.date
-            input#date-joined.span2(type="text",readonly)
-            span.add-on
-              i.icon-calendar
+          td.span3
+            div.input-append.date(data-date-format="mm/dd/yyyy")
+              input.date-joined.span2(readonly)
+              span.add-on
+                i.icon-calendar
           td.header.span2 Starting Points
           td.span3
-            input#starting-points
+            input.starting-points
         tr
           td
           td

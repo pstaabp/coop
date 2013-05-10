@@ -28,7 +28,7 @@ function defineModels(mongoose, fn) {
     **/
 
   var Transaction = new Schema({
-      date: Date,
+      tranaction_date: Date,
       from_family: String,
       to_family: String,
       points: Number
