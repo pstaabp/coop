@@ -126,7 +126,7 @@ app.loadUser = function(req, res, next) {
 
 var userRoutes = new UsersRoutes(app, User);
 var sessionRoutes = new SessionRoutes(app,User);
-var viewRoutes = new ViewRoutes(app,User,Family,_und);
+var viewRoutes = new ViewRoutes(app,User,Family,Transaction,_und);
 var familyRoutes = new FamilyRoutes(app,Family);
 
 

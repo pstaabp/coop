@@ -1,6 +1,7 @@
 extends ./layout
 
 block script
+  script(type="text/javascript",src="/coop/javascripts/apps/require-config.js")
   script(type='text/javascript',data-main='/coop/javascripts/apps/AdminPage',src='/coop/javascripts/require.js')
   
 block container
@@ -30,8 +31,8 @@ block container
         tbody
           tr
             td.span3
-              div.input-append.date(data-date-format="mm/dd/yyyy")
-                input.transaction-date.span2(readonly)
+              div.input-append.date.transaction-date(data-date-format="mm/dd/yyyy")
+                input.span2
                 span.add-on
                   i.icon-calendar
             td
@@ -108,6 +109,15 @@ block container
             button.btn#add-family-button  Add Family
             
     .tab-pane#transactions
+      h4 View all Transactions
+      table.table.table-bordered.span10#transactions-table
+        thead
+          th Points From
+          th Points To
+          th Number of Points
+          th Date
+        tbody
+
     .tab-pane#settings
       table.table.table-bordered#settings-table
         thead
@@ -128,10 +138,15 @@ block templates
     td.editable.children(contenteditable="true")
     td
       div.input-append.date.date-joined(data-date-format="mm/dd/yyyy")
-        input.span2(readonly)
+        input.span2
         span.add-on
           i.icon-calendar
     td.editable.starting-points(contenteditable="true")
+  script#transaction-row-template(type="text/template")
+    td.family-to
+    td.family-from
+    td.points
+    td.date
 
   script#help-text(type='text/template')
     p
@@ -139,6 +154,7 @@ block templates
   script(type="text/javascript")
     define('config', function() {
       return {
-        families: !{JSON.stringify(families)}
+        families: !{JSON.stringify(families)},
+        transactions: !{JSON.stringify(transactions)}
       };
     });

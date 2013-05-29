@@ -66,7 +66,7 @@ function(Backbone, _){
          ".starting-points": "starting_points",
          ".date-joined input": {observe: "date_joined",
             onGet: function(value, options) { return moment(value).format("MM/DD/YYYY");},
-            onSet: function(value,options) { return moment(value).utc().format();;},
+            onSet: function(value,options) { console.log("in onSet: " + value); return moment(value).utc().format();;},
             events: ['changeDate']
          }
       },

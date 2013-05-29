@@ -11,7 +11,7 @@ define(['Backbone', 'underscore','moment'], function(Backbone, _){
     		from_family: null,
     		to_family: null,
     		points: 0,
-    		transaction_date: moment(),
+    		transaction_date: new Date(),
     	},
         validation: {pattern: /^\d+(\.[0|5])?$/, msg: "The number of points must be either whole or half points."}
     });

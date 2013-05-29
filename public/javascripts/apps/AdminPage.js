@@ -1,27 +1,4 @@
-//require config
-require.config({
-   paths: {
-      "Backbone":             "../backbone",
-      "underscore":           "../underscore-min",
-      "jquery":               "../jquery",
-      "bootstrap":            "../bootstrap.min",
-      "backbone-validation":  "../backbone-validation.min",
-      "stickit":              "../backbone.stickit",
-      "bootstrap-datepicker": "../bootstrap-datepicker",
-      "moment":               "../moment"
-   },
-   urlArgs: "bust=" +  (new Date()).getTime(),
-   waitSeconds: 15,
-   shim: {
-      'underscore': { exports: '_' },
-      'Backbone': { deps: ['underscore', 'jquery'], exports: 'Backbone'},
-      'bootstrap':['jquery'],
-      'backbone-validation': ['Backbone'],
-      'backbone-validation': {deps: ['Backbone', 'jquery','underscore']},
-      'bootstrap-datepicker': {deps: ['bootstrap']},
-      'stickit': {deps: ['Backbone','jquery','underscore']},
-   }
-});
+
 
 require(['globals', 'Backbone', 'underscore','../views/WebPage','../models/Family','../models/FamilyList','../models/TransactionList', 
          '../models/Transaction','./AllFamilyView','./AddFamilyView',  './common','bootstrap','stickit','backbone-validation','bootstrap-datepicker'],
@@ -48,7 +25,8 @@ function(globals, Backbone, _, WebPage, Family, FamilyList, TranasactionList, Tr
          this.views = {
             addTransactionView :  new AddTransactionView({families: this.families, el: $("#new-transaction")}),
             addFamilyView : new AddFamilyView({parent: this, families: this.families, el: $("#add-family")}),
-            allFamilyView : new AllFamilyView({parent: this, el: $("#view-families")})
+            allFamilyView : new AllFamilyView({parent: this, el: $("#view-families")}),
+            allTransactionsView : new AllTransactionsView()
          }
          this.constructor.__super__.render.apply(this);  // Call  WebPage.render(); 
          this.views.allFamilyView.render();
@@ -73,15 +51,20 @@ function(globals, Backbone, _, WebPage, Family, FamilyList, TranasactionList, Tr
 
          this.familyList = this.families.map(function(family) {return {name: family.get("name"), id: family.id}});
          this.familyList.unshift({name: "Secretary", id: "0"});
+
+          this.model.on("change:transaction_date", function(model){
+            console.log(model.attributes);
+         });
       },
       render: function () {
-          var dateJoined = this.$(".transaction-date").parent();
-         dateJoined.attr("data-date",this.model.get("transaction_date").format("MM/DD/YYYY"));
-         
+         var dateJoined = this.$(".transaction-date input");
+         dateJoined.attr("data-date",moment(this.model.get("transaction_date")).format("MM/DD/YYYY"));
+
          dateJoined.datepicker().on("changeDate", function (evt) { 
             dateJoined.datepicker("hide");
-            dateJoined.datepicker("setValue",evt.date);
-         });
+            dateJoined.datepicker("setValue",moment(evt.date).format("MM/DD/YYYY"));
+            console.log(evt);
+         }); 
          Backbone.Validation.bind(this);
          this.stickit();
       },
@@ -110,19 +93,46 @@ function(globals, Backbone, _, WebPage, Family, FamilyList, TranasactionList, Tr
             }
          },
          "#points": "points",
-         ".transaction-date": { 
-            observe: "transaction_date",
-            onGet: function(value, options) { 
-               return moment(value).format("MM/DD/YYYY");
-            },
+         ".transaction-date": {observe: "transaction_date",
+            onGet: function(value, options) { return moment(value).format("MM/DD/YYYY");},
             onSet: function(value,options) { 
-               //console.log(value);
+               console.log(value); 
                return moment(value).utc().format();
             },
-
-            events: ['change']
+            events: ['changeDate']
          }
       }
+   });
+
+   var AllTransactionsView = Backbone.View.extend({
+      initialize: function (){
+         _.bindAll(this,"render");
+         this.tranactions = this.options.tranactions;
+         this.rowTemplate = $("#transaction-row-template")
+      },
+      render: function(){
+         var table = this.$("#tranactions-table tbody")
+         this.tranactions.each(function(transaction){
+            table.append( (new TranactionRow({model: transaction, rowTemplate: this.rowTemplate})).render().el);
+         })
+      }
+
+   });
+
+   var TranactionRow = Backbone.View.extend({
+      initialize: function(){
+         _.bindAll(this,"render");
+         this.rowTemplate = this.options.rowTemplate;
+      },
+      render: function (){
+         this.$el.html(this.rowTemplate);
+         this.stickit();
+         return this; 
+      },
+      bindings: {".family-to": "family_to",
+               ".family-from": "family_from",
+               ".points": "points",
+               ".date": "date"}
    });
 
     new AdminPage({el: $("#container")});
