@@ -1,16 +1,17 @@
 //require config
 var require = {
    paths: {
-      "Backbone":             "../backbone",
-      "underscore":           "../underscore-min",
-      "jquery":               "../jquery",
-      "bootstrap":            "../bootstrap.min",
-      "backbone-validation":  "../backbone-validation.min",
-      "stickit":              "../backbone.stickit",
-      "bootstrap-datepicker": "../bootstrap-datepicker",
-      "moment":               "../moment"
+      "Backbone":             "../../components/backbone/backbone",
+      "underscore":           "../../components/underscore/underscore",
+      "jquery":               "../../components/jquery/jquery",
+      "bootstrap":            "../../components/bootstrap/docs/assets/js/bootstrap",
+      "backbone-validation":  "../../components/backbone-validation/dist/backbone-validation",
+      "stickit":              "../../components/backbone.stickit/backbone.stickit",
+      "jquery-ui":            "../../components/jquery-ui/ui/jquery-ui",
+      "moment":               "../../components/moment/moment",
+
    },
-   urlArgs: "bust=" +  (new Date()).getTime(),
+   //urlArgs: "bust=" +  (new Date()).getTime(),
    waitSeconds: 15,
    shim: {
       'underscore': { exports: '_' },
@@ -18,7 +19,7 @@ var require = {
       'bootstrap':['jquery'],
       'backbone-validation': ['Backbone'],
       'backbone-validation': {deps: ['Backbone', 'jquery','underscore']},
-      'bootstrap-datepicker': {deps: ['bootstrap']},
+      'jquery-ui': {deps: ['jquery']},
       'stickit': {deps: ['Backbone','jquery','underscore']},
    }
 };

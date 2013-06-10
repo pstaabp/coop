@@ -1,4 +1,4 @@
-define(['Backbone', 'underscore','../models/Family','bootstrap-datepicker'], 
+define(['Backbone', 'underscore','../models/Family','jquery-ui','backbone-validation'], 
 function(Backbone, _,Family){
 
    var AddFamilyView = Backbone.View.extend({
@@ -26,13 +26,8 @@ function(Backbone, _,Family){
       render: function (){
          var self = this;
          this.errorPane = this.options.parent.errorPane;
-         var dateJoined = this.$(".date-joined").parent();
-         dateJoined.attr("data-date",this.model.get("date_joined").format("MM/DD/YYYY"));
-         
-         dateJoined.datepicker().on("changeDate", function (evt) { 
-            dateJoined.datepicker("hide");
-            dateJoined.datepicker("setValue",evt.date);
-         });
+
+         this.$(".date-joined").datepicker();
          Backbone.Validation.bind(this);
          this.stickit();
       },

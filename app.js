@@ -17,6 +17,7 @@ var express = require('express')
    , SessionRoutes = require('./routes/sessionRoutes')
    , ViewRoutes = require('./routes/ViewRoutes')
    , FamilyRoutes = require('./routes/FamilyRoutes')
+   , TransactionRoutes = require('./routes/TransactionRoutes')
    , db
    , User
    , Family
@@ -62,6 +63,7 @@ app.configure(function(){
    app.use(express.methodOverride());
    app.use("/coop/stylesheets",express.static(__dirname + "/public/stylesheets"));
    app.use("/coop/javascripts",express.static(__dirname + "/public/javascripts"));
+   app.use("/coop/components",express.static(__dirname + "/public/components"));
    app.use("/coop/img",express.static(__dirname + "/public/images"));
 });
 
@@ -128,6 +130,7 @@ var userRoutes = new UsersRoutes(app, User);
 var sessionRoutes = new SessionRoutes(app,User);
 var viewRoutes = new ViewRoutes(app,User,Family,Transaction,_und);
 var familyRoutes = new FamilyRoutes(app,Family);
+var transactionRoutes = new TransactionRoutes(app,Transaction);
 
 
 

@@ -1,16 +1,20 @@
-define(['Backbone', 'underscore'], 
+define(['Backbone', 'underscore','stickit'], 
 function(Backbone, _){
    var AllFamilyView = Backbone.View.extend({
       initialize: function() {
-         _.bindAll(this,"render");
+         _.bindAll(this,"render","showFamilies");
          this.parent = this.options.parent;
          this.rowTemplate = _.template($("#all-family-row-template").html());
          this.parent.families.on("remove",this.render);
+         this.transactions = this.options.transactions;
       },
       render: function (){
-         var self = this;
-
-         // determine what view is selected
+         this.$el.html($("#family-template").html());
+         this.showFamilies();
+      },
+      showFamilies: function () {
+         var self = this; 
+          // determine what view is selected
 
          var whichFamilies = this.$("input[type='radio']:checked").val()
            , selectedFamilies;
@@ -27,65 +31,79 @@ function(Backbone, _){
          var allFamilyTable  = this.$("#allFamilyTable tbody");
          allFamilyTable.html("");
          _(selectedFamilies).each(function(family){ 
-            allFamilyTable.append((new AllFamilyRowView({rowTemplate: self.rowTemplate, model: family})).render().el);
+            allFamilyTable.append((new AllFamilyRowView({rowTemplate: self.rowTemplate, model: family, 
+               transactions: self.transactions})).render().el);
          });
       },
-      events: {"change input[type='radio']": "render"}
+      events: {"change input[type='radio']": "showFamilies"}
    });
 
    var AllFamilyRowView = Backbone.View.extend({
       tagName: "tr",
       initialize: function() {
          var self = this;
-         _.bindAll(this,"render","deleteFamily","save");
+         _.bindAll(this,"render","deleteFamily");
          this.rowTemplate = this.options.rowTemplate;
-         this.model.on("change:date_joined", function(model){
-            console.log(model.attributes);
-            //model.set({date_joined: }, {silent: true})
-            self.model.save();
-         })
+         this.currentPoints = 0;
+         var toTransactions = this.options.transactions.filter(function(trans) { return trans.get("to_family")===self.model.id;});
+         var fromTransactions = this.options.transactions.filter(function(trans) { return trans.get("from_family")===self.model.id;});
+
+         // total of the points transferred to
+         var toPoints = _(toTransactions).reduce(function(num,trans) { return parseFloat(trans.get("points")) + num; },0)
+         var fromPoints = _(fromTransactions).reduce(function(num,trans) { return parseFloat(trans.get("points")) + num; },0)
+         this.currentPoints = parseInt(this.model.get("starting_points"))+toPoints-fromPoints; 
+
       },
       render: function() {
          var self = this;
          this.$el.html(this.rowTemplate);
          
-         var dateJoined = this.$(".date-joined input");
-         dateJoined.datepicker().on("changeDate", function (evt) { 
-            dateJoined.datepicker("hide");
-            dateJoined.datepicker("setValue",moment(evt.date).format("MM/DD/YYYY"));
-         });
+         this.$(".date-joined").datepicker();
+         this.$(".current-points").text(this.currentPoints);
          this.stickit();
          return this;
       },
       bindings: {
          ".active": "active",
          ".name": "name",
+         ".current-points": {onSet: function () { 
+            return this.currentPoints
+         }},
          ".email": "email",
          ".parents": "parents", 
          ".children": "children",
          ".starting-points": "starting_points",
-         ".date-joined input": {observe: "date_joined",
+         ".date-joined": {observe: "date_joined",
             onGet: function(value, options) { return moment(value).format("MM/DD/YYYY");},
-            onSet: function(value,options) { console.log("in onSet: " + value); return moment(value).utc().format();;},
-            events: ['changeDate']
+            onSet: function(value, options) { return moment(value).toDate();;},
+            events: ['blur']
          }
       },
       events: {"click span.add-on": "showDatepicker",
                "click .delete-family": "deleteFamily",
-               "blur td.editable": "save"
+               "click .edit-family": "editFamily",
+               "click .save-family": "saveFamily"
             },
-      save: function (evt) {
-         this.model.save();
-      },
       showDatepicker: function (){
-         this.$(".date-joined input").datepicker("show");
+         this.$(".date-joined").datepicker("show");
       },
       deleteFamily: function(){
          var del = confirm("Do you want to delete the " + this.model.get("name") + " family");
          if(del){
             this.model.destroy();
          }
-      }
+      },
+      editFamily: function() {
+         if (this.editable) { return; }
+         this.toggleEditable();
+       },
+      toggleEditable: function () {
+         //this.$("").prop("disabled",this.editable);
+         this.$(".editable").prop("contenteditable", !this.editable);
+         this.$(".transaction-date").datepicker("option", {disabled: this.editable});
+         this.stickit();
+         this.editable = !this.editable;
+       },
    });
 
    return AllFamilyView;

@@ -1,8 +1,9 @@
 extends ./layout
 
 block script
+  //link(rel="stylesheet",href="/coop/stylesheets/jquery-ui/jquery.ui.all.css")
   script(type="text/javascript",src="/coop/javascripts/apps/require-config.js")
-  script(type='text/javascript',data-main='/coop/javascripts/apps/AdminPage',src='/coop/javascripts/require.js')
+  script(type='text/javascript',data-main='/coop/javascripts/apps/AdminPage.js',src='/coop/components/requirejs/require.js')
   
 block container
   ul.nav.nav-tabs#admin-tabs
@@ -24,15 +25,16 @@ block container
       table.table.table-bordered#new-transaction-table
         thead
           tr
+            th Transfer Date
             th Transfer From
             th Transfer To
             th Points
-            th Transfer Date
+      
         tbody
           tr
             td.span3
-              div.input-append.date.transaction-date(data-date-format="mm/dd/yyyy")
-                input.span2
+              div.input-append
+                input.span2.transaction-date
                 span.add-on
                   i.icon-calendar
             td
@@ -50,29 +52,6 @@ block container
 
 
     .tab-pane#view-families.active
-
-      label.radio.inline 
-        input(type='radio',name='showType',value='all') 
-        | Show All Families
-      label.radio.inline 
-        input(type='radio',name='showType',value='active',checked) 
-        | Active Families
-      label.radio.inline
-        input(type='radio',name='showType',value='inactive') 
-        | Inactive Families
-        
-      table.table.table-bordered#allFamilyTable
-        thead
-          tr
-            th Active
-            th Family Name
-            th Email
-            th Parents
-            th Children
-            th Date Joined
-            th Starting Points
-        tbody
-
     .tab-pane#add-family
       h4 Add a Family
       table.table.table-bordered.span10
@@ -95,7 +74,7 @@ block container
           td.header.span2 Date Joined
           td.span3
             div.input-append.date(data-date-format="mm/dd/yyyy")
-              input.date-joined.span2(readonly)
+              input.date-joined.span2
               span.add-on
                 i.icon-calendar
           td.header.span2 Starting Points
@@ -109,15 +88,6 @@ block container
             button.btn#add-family-button  Add Family
             
     .tab-pane#transactions
-      h4 View all Transactions
-      table.table.table-bordered.span10#transactions-table
-        thead
-          th Points From
-          th Points To
-          th Number of Points
-          th Date
-        tbody
-
     .tab-pane#settings
       table.table.table-bordered#settings-table
         thead
@@ -129,24 +99,97 @@ block container
         tbody
     
 block templates
+  script#family-template(type="text/template")
+    label.radio.inline 
+      input(type='radio',name='showType',value='all') 
+      | Show All Families
+    label.radio.inline 
+      input(type='radio',name='showType',value='active',checked) 
+      | Active Families
+    label.radio.inline
+      input(type='radio',name='showType',value='inactive') 
+      | Inactive Families
+      
+    table.table.table-bordered#allFamilyTable
+      thead
+        tr
+          th Delete/Edit/Save
+          th Active
+          th Family Name
+          th Current Points
+          th Email
+          th Parents
+          th Children
+          th Date Joined
+          th Starting Points
+      tbody
+
+
   script#all-family-row-template(type="text/template")
     td
-      input.active(type="checkbox")
-    td.editable.name(contenteditable="true")
-    td.editable.email(contenteditable="true")
-    td.editable.parents(contenteditable="true")
-    td.editable.children(contenteditable="true")
+      span.btn-group
+        button.btn.delete-family
+          i.icon-trash
+        button.btn.edit-family
+          i.icon-edit
+        button.btn.save-family
+          i.icon-hdd
     td
-      div.input-append.date.date-joined(data-date-format="mm/dd/yyyy")
-        input.span2
+      input.active(type="checkbox")
+    td.editable.name
+    td.current-points
+    td.editable.email
+    td.editable.parents
+    td.editable.children
+    td
+      div.input-append
+        input.span2.date-joined
         span.add-on
           i.icon-calendar
-    td.editable.starting-points(contenteditable="true")
+    td.editable.starting-points
+  script#all-transactions-template(type="text/template")
+    h4 View Transactions
+    .transaction-choices
+      label.radio.inline 
+        input(type='radio',name='trans-view',value='all',checked)
+        | All Transactions
+      label.radio.inline
+        input(type='radio',name='trans-view',value='month')
+        | View on month
+        input.month-view.span2.date
+      label.radio.inline
+        input(type='radio',name='trans-view',value='timespan')
+        | View from
+        input.from-time.span2.date
+        | to
+        input.to-time.span2.date
+    .transaction-totals
+
+    table.table.table-bordered.span10#transactions-table
+      thead
+        th Delete/Edit/Save
+        th Points From
+        th Points To
+        th Number of Points
+        th Date
+      tbody
+
   script#transaction-row-template(type="text/template")
-    td.family-to
-    td.family-from
+    td
+      span.btn-group
+        button.btn.delete-transaction
+          i.icon-trash
+        button.btn.edit-transaction
+          i.icon-edit
+        button.btn.save-transaction
+          i.icon-hdd
+    td
+      select.family-from(disabled)
+    td
+      select.family-to(disabled)
     td.points
-    td.date
+    td
+      input.span2.transaction-date(disabled)
 
   script#help-text(type='text/template')
     p

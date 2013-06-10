@@ -1,21 +1,3 @@
-//require config
-require.config({
-   paths: {
-      "Backbone":             "../backbone-min",
-      "underscore":           "../underscore-min",
-      "jquery":               "../jquery.min",
-      "bootstrap":            "../bootstrap.min",
-      "moment":               "../moment"
-   },
-   urlArgs: "bust=" +  (new Date()).getTime(),
-   waitSeconds: 15,
-   shim: {
-      'underscore': { exports: '_' },
-      'Backbone': { deps: ['underscore', 'jquery'], exports: 'Backbone'},
-      'bootstrap':['jquery'],
-      'backbone-validation': ['Backbone'],
-   }
-});
 
 require(['Backbone', 'underscore','../views/WebPage','./common'],
 function(Backbone, _,WebPage, common){

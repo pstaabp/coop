@@ -1,1 +1,0 @@
-../vendor/stickit/backbone.stickit.js
