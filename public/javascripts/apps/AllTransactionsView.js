@@ -11,28 +11,41 @@ define(['Backbone','underscore','moment','../models/Transaction'],function(Backb
          this.transactions.on("remove",this.render);
          this.transactions.on("change",this.updatePoints);
          this.currentView = {view: "all"};
+         // set up a Backbone.Model to handle the family filter
+         var FilterByFamily = Backbone.Model.extend({defaults: {family: "", month: moment(), from_date: moment(), to_date: moment()}}); 
+         this.model = new FilterByFamily(); 
       },
       render: function(){
       	this.$el.html($("#all-transactions-template").html());
-         this.showTransactions();
+        this.stickit();
+        this.showTransactions();
       },
       filterTransactions: function () {
+        var self = this;
+        this.filteredTransactions = this.transactions.toArray();
+        if (!this.$(".filter-transactions").prop("checked")){
+          return;
+        }
+        if(this.$(".filter-by-family").prop("checked")){
+           this.filteredTransactions = _(this.transactions.where({from_family: $(".filter-by-family-select").val()}))
+                  .union(this.transactions.where({to_family: $(".filter-by-family-select").val()}))
+        }
       	switch(this.$("input[name='trans-view']:checked").val()){
-         	case "all": 
-         		this.filteredTransactions = this.transactions.toArray(); 
-         		this.currentView = {view: "all"};
-         		break;
          	case "month": 
-         		this.currentView = {view: "month", date: this.$(".month-view").val()};
          		this.filteredTransactions = this.transactions.filter(function(trans){
-         			return moment(trans.get("transaction_date")).isSame(moment(self.$(".month-view").val(),"MM/YYYY"),"month");
+         			return moment(trans.get("transaction_date")).isSame(self.model.get("month"),"month");
 	         	});
          	break;
-         	
+         	case "timespan":
+            this.filteredTransactions = this.transactions.filter(function(trans){
+              return self.model.get("from_date").startOf("day").isBefore(moment(trans.get("transaction_date"))) &&
+                  moment(trans.get("transaction_date")).isBefore(self.model.get("to_date").endOf("day"));
+                });
+
+          break;
          }
       },
       updatePoints: function () {
-      	this.filterTransactions();
       	var totalPoints = _(this.filteredTransactions).reduce(function(num,trans) { return parseFloat(trans.get("points")) + num; }, 0);
       	this.$(".transaction-totals").html("Total number of points transferred is " + totalPoints);
       },
@@ -42,18 +55,36 @@ define(['Backbone','underscore','moment','../models/Transaction'],function(Backb
       		, table = this.$("#transactions-table tbody");
 
       	this.currentView.date = this.$(".month-view").val();
-			table.html("");
-         this.filterTransactions();
+  			table.html("");
+        this.filterTransactions();
 
-         _(this.filteredTransactions).each(function(transaction){
+        _(this.filteredTransactions).each(function(transaction){
             table.append( (new TransactionRow({model: transaction, rowTemplate: self.rowTemplate, 
             		families: self.families, familyList: self.familyList})).render().el);
-         });
-         this.updatePoints();
+        });
+        this.updatePoints();
 
       },
-      events: { "change input[name='trans-view']": "showTransactions",
-   				 "change .month-view": "showTransactions"}
+      toggleFilterByDates: function (){
+
+      },
+      toggleFilterTransactions: function (){
+        if (this.$(".filter-transactions").prop("checked")){
+            this.$(".filter-options").show("slide",{direction: "up"});
+        } else {
+          this.$(".filter-options").hide("slide",{direction: "up"});
+        }
+      },
+      events: { "change .filter-by-family,.filter-by-dates,input[type='radio'],.filter-by-family-select": "showTransactions",
+                "change .filter-transactions": "toggleFilterTransactions",
+       				  "change .month-view,.date": "showTransactions"},
+      bindings: {".filter-by-family-select": { observe: "family", 
+          selectOptions: { collection: "this.familyList", labelPath: "name", valuePath: "id"
+                }},
+                ".month-view": "month",
+                ".from-time": "from_date",
+                ".to-time": "to_date"
+      }
 
    });
 

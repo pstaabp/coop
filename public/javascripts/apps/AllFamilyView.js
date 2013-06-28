@@ -2,29 +2,46 @@ define(['Backbone', 'underscore','stickit'],
 function(Backbone, _){
    var AllFamilyView = Backbone.View.extend({
       initialize: function() {
-         _.bindAll(this,"render","showFamilies");
-         this.parent = this.options.parent;
+         _.bindAll(this,"render","showFamilies","testme");
+         
          this.rowTemplate = _.template($("#all-family-row-template").html());
-         this.parent.families.on("remove",this.render);
+         this.families = this.options.families;
+         this.families.on("remove",this.render);
          this.transactions = this.options.transactions;
+         this.settings = this.options.settings;
       },
       render: function (){
+         var self = this;
          this.$el.html($("#family-template").html());
+         this.currentDateProp = (this.settings.find(function(_setting){return _setting.get("name") === "currentDate" ;}));
+         this.currentDateProp.on("change",this.render);
+         if (this.currentDateProp.get("value")== "") {this.currentDateProp.set("value",moment().format("MM/DD/YYYY"));}
          this.showFamilies();
+         this.stickit(this.currentDateProp);
       },
       showFamilies: function () {
          var self = this; 
           // determine what view is selected
 
          var whichFamilies = this.$("input[type='radio']:checked").val()
-           , selectedFamilies;
+           , selectedFamilies
+           , currentDate = moment(this.currentDateProp.get("value"));
 
          switch(whichFamilies){
-            case "active": selectedFamilies = this.parent.families.filter(function(family) { return family.get("active") === true});
+            case "active": 
+               selectedFamilies = this.families.filter(function(family) { 
+                  if(!family.get("date_left")) { return moment(family.get("date_joined")).isBefore(currentDate);}
+                  return (moment(family.get("date_joined")).isBefore(currentDate)) &&
+                           (currentDate.isBefore(moment(family.get("date_left"))));});
             break;
-            case "inactive": selectedFamilies = this.parent.families.filter(function(family) { return family.get("active") === false});
+            case "inactive": 
+               selectedFamilies = this.families.filter(function(family) { 
+                  if (!family.get("date_left")) { return currentDate.isBefore(moment(family.get("date_joined")));}
+                  return (currentDate.isBefore(moment(family.get("date_joined")))) ||
+                           (currentDate.isAfter(moment(family.get("date_left"))));
+                        });
             break;
-            case "all": selectedFamilies = this.parent.families.filter(function(family) { return true});
+            case "all": selectedFamilies = this.families.filter(function(family) { return true});
             break;
          }
 
@@ -35,14 +52,21 @@ function(Backbone, _){
                transactions: self.transactions})).render().el);
          });
       },
-      events: {"change input[type='radio']": "showFamilies"}
+      events: {"change input[type='radio']": "showFamilies",
+               //"change .current-date" : "testme"
+            },
+      bindings: { ".current-date": "value"},
+      testme: function () {
+         console.log(this.currentDateProp.attributes);
+      }
+      
    });
 
    var AllFamilyRowView = Backbone.View.extend({
       tagName: "tr",
       initialize: function() {
          var self = this;
-         _.bindAll(this,"render","deleteFamily");
+         _.bindAll(this,"render","deleteFamily","editFamily","saveFamily");
          this.rowTemplate = this.options.rowTemplate;
          this.currentPoints = 0;
          var toTransactions = this.options.transactions.filter(function(trans) { return trans.get("to_family")===self.model.id;});
@@ -57,7 +81,6 @@ function(Backbone, _){
       render: function() {
          var self = this;
          this.$el.html(this.rowTemplate);
-         
          this.$(".date-joined").datepicker();
          this.$(".current-points").text(this.currentPoints);
          this.stickit();
@@ -73,11 +96,8 @@ function(Backbone, _){
          ".parents": "parents", 
          ".children": "children",
          ".starting-points": "starting_points",
-         ".date-joined": {observe: "date_joined",
-            onGet: function(value, options) { return moment(value).format("MM/DD/YYYY");},
-            onSet: function(value, options) { return moment(value).toDate();;},
-            events: ['blur']
-         }
+         ".date-joined": "date_joined",
+         ".date-left": "date_left"
       },
       events: {"click span.add-on": "showDatepicker",
                "click .delete-family": "deleteFamily",
@@ -93,6 +113,10 @@ function(Backbone, _){
             this.model.destroy();
          }
       },
+      saveFamily: function () {
+         this.model.save();
+         this.toggleEditable();
+      },
       editFamily: function() {
          if (this.editable) { return; }
          this.toggleEditable();
@@ -100,7 +124,7 @@ function(Backbone, _){
       toggleEditable: function () {
          //this.$("").prop("disabled",this.editable);
          this.$(".editable").prop("contenteditable", !this.editable);
-         this.$(".transaction-date").datepicker("option", {disabled: this.editable});
+         this.$(".date").datepicker("option", {disabled: this.editable});
          this.stickit();
          this.editable = !this.editable;
        },

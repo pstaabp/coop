@@ -13,6 +13,7 @@ define(['Backbone', 'underscore','./TransactionList','moment'], function(Backbon
             children: "",
             email: "",
             date_joined: moment(),
+            date_left: "",
             active: true,
             starting_points: 0
         },

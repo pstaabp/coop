@@ -23,6 +23,7 @@ var express = require('express')
    , Family
    , Transaction
    , LoginToken
+   , Setting
    , Settings = { development: {}, test: {}, production: {} };
 
 var app = express();
@@ -72,6 +73,7 @@ models.defineModels(mongoose, function() {
    app.Transaction = Transaction = mongoose.model('Transaction');
    app.Family = Family = mongoose.model('Family');
    app.LoginToken = LoginToken = mongoose.model('LoginToken');
+   app.Setting = Setting = mongoose.model('Setting');
    db = mongoose.connect(app.set('db-uri'));
 });
 
@@ -128,7 +130,7 @@ app.loadUser = function(req, res, next) {
 
 var userRoutes = new UsersRoutes(app, User);
 var sessionRoutes = new SessionRoutes(app,User);
-var viewRoutes = new ViewRoutes(app,User,Family,Transaction,_und);
+var viewRoutes = new ViewRoutes(app,User,Family,Transaction,Setting,_und);
 var familyRoutes = new FamilyRoutes(app,Family);
 var transactionRoutes = new TransactionRoutes(app,Transaction);
 

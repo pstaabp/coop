@@ -18,6 +18,7 @@ function defineModels(mongoose, fn) {
     children: String,
     email: String,
     date_joined: Date,
+    date_left: Date,
     active: Boolean,
     starting_points: Number,
     current_points: Number
@@ -131,10 +132,27 @@ function defineModels(mongoose, fn) {
       return JSON.stringify({ email: this.email, token: this.token, series: this.series });
     });
 
+/** 
+  * Model: Setting
+  *
+  * used for storing settings for the App
+  *
+  */
+
+  Setting = new Schema({
+      name: String,
+      value: String,
+      description: String,
+      type: String
+  })
+
+
+
   mongoose.model('Family', Family);
   mongoose.model('Transaction', Transaction);
   mongoose.model('User', User);
   mongoose.model('LoginToken', LoginToken);
+  mongoose.model('Setting', Setting);
   
   fn();
 }

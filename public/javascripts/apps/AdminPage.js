@@ -3,9 +3,9 @@
 require(['globals', 'Backbone', 'underscore','../views/WebPage','../models/Family',
          '../models/FamilyList','../models/TransactionList', 
          '../models/Transaction','./AllFamilyView','./AddFamilyView',  './common','./AddTransactionView', 
-         './AllTransactionsView','bootstrap'],
+         './AllTransactionsView','../models/SettingsList','SettingsView', 'bootstrap'],
 function(globals, Backbone, _, WebPage, Family, FamilyList, TranasactionList, Transaction,AllFamilyView,AddFamilyView, 
-            common,AddTransactionView,AllTransactionsView){
+            common,AddTransactionView,AllTransactionsView,SettingsList,SettingsView){
 
    var AdminPage = WebPage.extend({
       initialize: function () {
@@ -17,6 +17,7 @@ function(globals, Backbone, _, WebPage, Family, FamilyList, TranasactionList, Tr
 
          this.families = (globals.families)? new FamilyList(globals.families) : new FamilyList(); 
          this.transactions = (globals.transactions) ? new TranasactionList(globals.transactions) : new TranasactionList();
+         this.settings = (globals.settings) ? new SettingsList(globals.settings) : new SettingsList();
          
          this.families.on("add",function(model){
             self.announce.addMessage("Added the " + model.get("name") + " family.");
@@ -32,7 +33,7 @@ function(globals, Backbone, _, WebPage, Family, FamilyList, TranasactionList, Tr
               + toFamily + " family on " + moment(trans.get("transaction_date")).format("MM/DD/YYYY"));
          });
 
-         this.families.on("change",function(model){
+         this.families.on("sync",function(model){
             self.announce.addMessage("Updated the " + model.get("name") + " family.");
          })
 
@@ -40,9 +41,11 @@ function(globals, Backbone, _, WebPage, Family, FamilyList, TranasactionList, Tr
             addTransactionView :  new AddTransactionView({families: this.families, transactions: this.transactions, 
                el: $("#new-transaction")}),
             addFamilyView : new AddFamilyView({parent: this, families: this.families, el: $("#add-family")}),
-            allFamilyView : new AllFamilyView({parent: this, el: $("#view-families"), transactions: this.transactions}),
+            allFamilyView : new AllFamilyView({families: this.families, el: $("#view-families"), settings: this.settings, 
+                                    transactions: this.transactions}),
             allTransactionsView : new AllTransactionsView({transactions: this.transactions, families: this.families,
-              el: $("#transactions")})
+              el: $("#transactions")}),
+            settingsView : new SettingsView({settings: this.settings, el: $("#settings")})
          }
          this.constructor.__super__.render.apply(this);  // Call  WebPage.render(); 
          this.views.allFamilyView.render();

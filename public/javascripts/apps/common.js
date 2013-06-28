@@ -1,4 +1,26 @@
-define(['Backbone'], function(Backbone){
+define(['Backbone','stickit','jquery-ui'], function(Backbone){
+
+  Backbone.Stickit.addHandler({
+        selector: ".month",
+        initialize: function($el, model, options) {
+          $el.datepicker();
+        },
+        onGet: function(value, options) { return moment(value).format("MM/YYYY");},
+        onSet: function(value,options) { return moment(value,"MM/YYYY"); }
+    });
+
+
+    Backbone.Stickit.addHandler({
+        selector: ".date",
+        initialize: function($el, model, options) {
+          $el.datepicker();
+        },
+        onGet: function(value, options) { 
+          return value ? moment(value).format("MM/DD/YYYY"): "" ;},
+        onSet: function(value,options) { 
+          return moment(value,"MM/DD/YYYY").toDate(); }
+    });
+
     
    var common = {
       logout: function (evt) {
@@ -30,5 +52,9 @@ define(['Backbone'], function(Backbone){
         }
     }
     return common;
+
+
+
+    
 
 });

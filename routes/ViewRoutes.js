@@ -1,4 +1,4 @@
-module.exports = function ViewRoutes(app, User,Family,Transaction,_und) {
+module.exports = function ViewRoutes(app, User,Family,Transaction,Setting,_und) {
 
 	app.get('/coop/view', app.loadUser, function(req,res){
 		
@@ -8,7 +8,12 @@ module.exports = function ViewRoutes(app, User,Family,Transaction,_und) {
 			Transaction.find({}).exec(function(err2,_transactions){
 				if(err2){console.log(err2);}
 
-				res.render('admin.jade',{families: _families,transactions:_transactions});							
+				Setting.find({}).exec(function(err3,_settings){
+					if(err3){console.log(err3);}
+					res.render('admin.jade',{families: _families,transactions:_transactions,settings: _settings});							
+				})
+
+
 			});
 
 

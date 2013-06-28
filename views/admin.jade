@@ -89,38 +89,36 @@ block container
             
     .tab-pane#transactions
     .tab-pane#settings
-      table.table.table-bordered#settings-table
-        thead
-          tr
-            th Setting Name
-            th Value
-            th Description
-
-        tbody
-    
+      
 block templates
   script#family-template(type="text/template")
-    label.radio.inline 
-      input(type='radio',name='showType',value='all') 
-      | Show All Families
-    label.radio.inline 
-      input(type='radio',name='showType',value='active',checked) 
-      | Active Families
-    label.radio.inline
-      input(type='radio',name='showType',value='inactive') 
-      | Inactive Families
+    .row
+      .span6
+        label.radio.inline 
+          input(type='radio',name='showType',value='all') 
+          | Show All Families
+        label.radio.inline 
+          input(type='radio',name='showType',value='active',checked) 
+          | Active Families
+        label.radio.inline
+          input(type='radio',name='showType',value='inactive') 
+          | Inactive Families
+      .span6.pull-right
+        label.inline
+          | Current Date:
+          input.span2.current-date.date
       
     table.table.table-bordered#allFamilyTable
       thead
         tr
           th Delete/Edit/Save
-          th Active
           th Family Name
           th Current Points
           th Email
           th Parents
           th Children
           th Date Joined
+          th Date Left
           th Starting Points
       tbody
 
@@ -134,36 +132,52 @@ block templates
           i.icon-edit
         button.btn.save-family
           i.icon-hdd
-    td
-      input.active(type="checkbox")
     td.editable.name
     td.current-points
     td.editable.email
     td.editable.parents
     td.editable.children
     td
-      div.input-append
-        input.span2.date-joined
-        span.add-on
-          i.icon-calendar
+      input.date.date-joined.span2(disabled="disabled")
+    td
+      input.date.date-left.span2(disabled="disabled")
     td.editable.starting-points
   script#all-transactions-template(type="text/template")
-    h4 View Transactions
-    .transaction-choices
-      label.radio.inline 
-        input(type='radio',name='trans-view',value='all',checked)
-        | All Transactions
-      label.radio.inline
-        input(type='radio',name='trans-view',value='month')
-        | View on month
-        input.month-view.span2.date
-      label.radio.inline
-        input(type='radio',name='trans-view',value='timespan')
-        | View from
-        input.from-time.span2.date
-        | to
-        input.to-time.span2.date
-    .transaction-totals
+    .row
+      h4.span4 View Transactions
+      .transaction-totals.span4
+      .span2.pull-right
+        label.inline.checkbox
+          input.filter-transactions(type="checkbox")
+          | Filter Transactions
+    
+    table.filter-options
+      tbody
+        tr
+          td
+            label.checkbox.inline.span4
+              input.filter-by-dates(type='checkbox')
+              | Filter By Dates
+          td
+            label.radio.inline
+              input(type='radio',name='trans-view',value='month')
+              | View on month
+              input.month-view.span2.month
+          td
+            label.radio.inline
+              input(type='radio',name='trans-view',value='timespan')
+              | View from
+              input.from-time.span2.date
+              | to
+              input.to-time.span2.date
+        tr
+          td
+            label.checkbox.inline.span4
+              input.filter-by-family(type='checkbox')
+              | Filter By Family
+          td
+            select.filter-by-family-select
+      
 
     table.table.table-bordered.span10#transactions-table
       thead
@@ -173,6 +187,7 @@ block templates
         th Number of Points
         th Date
       tbody
+
 
   script#transaction-row-template(type="text/template")
     td
@@ -191,6 +206,21 @@ block templates
     td
       input.span2.transaction-date(disabled)
 
+  script#settings-template(type="text/template")
+    table.table.table-bordered.settings-table
+        thead
+          tr
+            th Setting Name
+            th Value
+            th Description
+
+        tbody
+  
+  script#setting-row-template(type="text/template")
+    td.name
+    td.value
+    td.description
+
   script#help-text(type='text/template')
     p
       | Help text!!
@@ -198,6 +228,7 @@ block templates
     define('config', function() {
       return {
         families: !{JSON.stringify(families)},
-        transactions: !{JSON.stringify(transactions)}
+        transactions: !{JSON.stringify(transactions)},
+        settings: !{JSON.stringify(settings)}
       };
     });
