@@ -1,0 +1,9 @@
+{
+  "name": "monthpicker",
+  "version": "0.0.0",
+  "commit": "616abefe3150aa636ab4a5c96517aeafa26a865a",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/lucianocosta/jquery.mtz.monthpicker.git"
+  }
+}
