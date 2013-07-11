@@ -30,7 +30,7 @@ define(['Backbone', 'underscore','../models/MessageList','../models/Message'],
     	    return this; // for chainable calls, like .render().el
     	},
         close: function () {
-    	this.isOpen = false; 
+    	   this.isOpen = false; 
             var self = this;
             this.$el.fadeOut("slow", function () { self.$el.css("display","none"); });
         },

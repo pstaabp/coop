@@ -1,0 +1,6 @@
+#!/bin/bash
+
+mongoexport --db coop --collection users --out users.json --journal
+mongoexport --db coop --collection families --out families.json --journal
+mongoexport --db coop --collection settings --out settings.json --journal
+mongoexport --db coop --collection transactions --out transactions.json --journal

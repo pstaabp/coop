@@ -17,8 +17,8 @@ function defineModels(mongoose, fn) {
     parents: String,
     children: String,
     email: String,
-    date_joined: Date,
-    date_left: Date,
+    date_joined: String,
+    date_left: String,
     active: Boolean,
     starting_points: Number,
     current_points: Number

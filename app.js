@@ -17,6 +17,7 @@ var express = require('express')
    , SessionRoutes = require('./routes/sessionRoutes')
    , ViewRoutes = require('./routes/ViewRoutes')
    , FamilyRoutes = require('./routes/FamilyRoutes')
+   , SettingRoutes = require('./routes/SettingRoutes')
    , TransactionRoutes = require('./routes/TransactionRoutes')
    , db
    , User
@@ -132,6 +133,7 @@ var userRoutes = new UsersRoutes(app, User);
 var sessionRoutes = new SessionRoutes(app,User);
 var viewRoutes = new ViewRoutes(app,User,Family,Transaction,Setting,_und);
 var familyRoutes = new FamilyRoutes(app,Family);
+var settingRoutes = new SettingRoutes(app,Setting);
 var transactionRoutes = new TransactionRoutes(app,Transaction);
 
 

@@ -1,1 +1,2 @@
-.filter-options {display: none;}
+.new-transaction {display: none;}
+#new-transaction-table, .new-family-table {background: lightyellow;}

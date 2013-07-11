@@ -7,163 +7,94 @@ block script
   
 block container
   ul.nav.nav-tabs#admin-tabs
-    li
-      a(href="#new-transaction",data-toggle="tab",data-view="addTransactionView") New Transaction
     li.active
-      a(href="#view-families",data-toggle="tab",data-view="allFamilyView") View Families
+      a(href="#transactions",data-toggle="tab",data-view="transactionsView") Transactions
     li
-      a(href="#add-family",data-toggle="tab",data-view="addFamilyView") Add Family
-    li
-      a(href="#transactions",data-toggle="tab",data-view="allTransactionsView") View Transactions
+      a(href="#view-families",data-toggle="tab",data-view="familyView") Families
     li
       a(href="#settings",data-toggle="tab",data-view="settingsView") Settings
     
     
       
   .tab-content
-    .tab-pane#new-transaction
-      table.table.table-bordered#new-transaction-table
-        thead
-          tr
-            th Transfer Date
-            th Transfer From
-            th Transfer To
-            th Points
-      
-        tbody
-          tr
-            td.span3
-              div.input-append
-                input.span2.transaction-date
-                span.add-on
-                  i.icon-calendar
-            td
-              select#family-from
-                option
-            td
-              select#family-to
-                option
-            td
-              input#points(type="text")
-            
-          tr
-            td(colspan="4")
-              button.btn#new-transaction-button Save Transaction
-
-
-    .tab-pane#view-families.active
-    .tab-pane#add-family
-      h4 Add a Family
-      table.table.table-bordered.span10
-        tr
-          td.header.span2 Family Name
-          td.span3
-            input.name.span3
-          td.header.span2 Email(s)
-          td.span3
-            input.email.span3
-
-        tr
-          td.header.span2 Parent(s)
-          td.span3
-            input.parents.span3
-          td.header.span2 Children
-          td.span3
-            input.children.span3
-        tr
-          td.header.span2 Date Joined
-          td.span3
-            div.input-append.date(data-date-format="mm/dd/yyyy")
-              input.date-joined.span2
-              span.add-on
-                i.icon-calendar
-          td.header.span2 Starting Points
-          td.span3
-            input.starting-points
-        tr
-          td
-          td
-          td
-          td
-            button.btn#add-family-button  Add Family
-            
-    .tab-pane#transactions
+    .tab-pane#transactions.active
+    .tab-pane#view-families
     .tab-pane#settings
       
 block templates
+  script#add-family-template(type="text/template")
+    h4 Add a Family
+    table.table.table-bordered.span10.new-family-table
+      tr
+        td.header.span2 Family Name
+        td.span3
+          input.name.span3
+        td.header.span2 Email(s)
+        td.span3
+          input.email.span3
+
+      tr
+        td.header.span2 Parent(s)
+        td.span3
+          input.parents.span3
+        td.header.span2 Children
+        td.span3
+          input.children.span3
+      tr
+        td.header.span2 Date Joined
+        td.span3
+          input.date.date-joined.span2
+        td.header.span2 Starting Points
+        td.span3
+          input.starting-points
+      tr
+        td(colspan="2")
+          button.btn.add-family-button  Add Family
+        td(colspan="2")
+          button.btn.cancel-add-family-button Cancel
+            
+
   script#family-template(type="text/template")
     .row
-      .span6
+      .span2
+        button.btn.new-family-button New Family
+      .span4
+        span.inline Show 
         label.radio.inline 
           input(type='radio',name='showType',value='all') 
-          | Show All Families
+          | All
         label.radio.inline 
           input(type='radio',name='showType',value='active',checked) 
-          | Active Families
+          | Active
         label.radio.inline
           input(type='radio',name='showType',value='inactive') 
-          | Inactive Families
-      .span6.pull-right
-        label.inline
+          | Inactive
+      .span6
+        label.inline(style="display: inline")
           | Current Date:
           input.span2.current-date.date
+        button.btn.save-current-date Save
+        
+    .new-family
       
-    table.table.table-bordered#allFamilyTable
-      thead
-        tr
-          th Delete/Edit/Save
-          th Family Name
-          th Current Points
-          th Email
-          th Parents
-          th Children
-          th Date Joined
-          th Date Left
-          th Starting Points
-      tbody
+    #family-table-container
 
-
-  script#all-family-row-template(type="text/template")
-    td
-      span.btn-group
-        button.btn.delete-family
-          i.icon-trash
-        button.btn.edit-family
-          i.icon-edit
-        button.btn.save-family
-          i.icon-hdd
-    td.editable.name
-    td.current-points
-    td.editable.email
-    td.editable.parents
-    td.editable.children
-    td
-      input.date.date-joined.span2(disabled="disabled")
-    td
-      input.date.date-left.span2(disabled="disabled")
-    td.editable.starting-points
   script#all-transactions-template(type="text/template")
-    .row
-      h4.span4 View Transactions
-      .transaction-totals.span4
-      .span2.pull-right
-        label.inline.checkbox
-          input.filter-transactions(type="checkbox")
-          | Filter Transactions
+    h4 View Transactions
     
     table.filter-options
       tbody
         tr
-          td
-            label.checkbox.inline.span4
-              input.filter-by-dates(type='checkbox')
-              | Filter By Dates
-          td
+          td.span2
+            label.radio.inline
+              input(type="radio",name='trans-view',value='all')
+              | View All
+          td.span4
             label.radio.inline
               input(type='radio',name='trans-view',value='month')
-              | View on month
-              input.month-view.span2.month
-          td
+              | View by month
+              input.span2.month-view.month
+          td.span5
             label.radio.inline
               input(type='radio',name='trans-view',value='timespan')
               | View from
@@ -171,40 +102,17 @@ block templates
               | to
               input.to-time.span2.date
         tr
-          td
-            label.checkbox.inline.span4
-              input.filter-by-family(type='checkbox')
-              | Filter By Family
-          td
-            select.filter-by-family-select
+          td.span4
+            .input-append
+              input.span3.filter-text(placeholder="Filter")
+              button.btn.clear-filter &times;
+          td.transaction-totals.span4
+          td.span4
+            button.btn.new-trans-button New Transaction
+
+    .new-transaction
       
-
-    table.table.table-bordered.span10#transactions-table
-      thead
-        th Delete/Edit/Save
-        th Points From
-        th Points To
-        th Number of Points
-        th Date
-      tbody
-
-
-  script#transaction-row-template(type="text/template")
-    td
-      span.btn-group
-        button.btn.delete-transaction
-          i.icon-trash
-        button.btn.edit-transaction
-          i.icon-edit
-        button.btn.save-transaction
-          i.icon-hdd
-    td
-      select.family-from(disabled)
-    td
-      select.family-to(disabled)
-    td.points
-    td
-      input.span2.transaction-date(disabled)
+    #transaction-table-container
 
   script#settings-template(type="text/template")
     table.table.table-bordered.settings-table
@@ -216,6 +124,38 @@ block templates
 
         tbody
   
+  script#new-transaction-template(type="text/template")
+    table.table.table-bordered#new-transaction-table
+      thead
+        tr
+          th Transfer Date
+          th Transfer From
+          th Transfer To
+          th Points
+    
+      tbody
+        tr
+          td.span3
+            div.input-append
+              input.span2.transaction-date.date(tabindex="1")
+              span.add-on
+                i.icon-calendar
+          td
+            select#family-from(tabindex="2")
+              option
+          td
+            select#family-to(tabindex="3")
+              option
+          td
+            input#points(tabindex="4")
+          
+        tr
+          td(colspan="2")
+            button.btn.save-transaction-button(tabindex="5") Save Transaction
+          td(colspan="2")
+            button.btn.cancel-transaction-button(tabindex="6") Cancel Transaction
+
+
   script#setting-row-template(type="text/template")
     td.name
     td.value

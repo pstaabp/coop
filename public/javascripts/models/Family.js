@@ -14,7 +14,6 @@ define(['Backbone', 'underscore','./TransactionList','moment'], function(Backbon
             email: "",
             date_joined: moment(),
             date_left: "",
-            active: true,
             starting_points: 0
         },
         validation: {
@@ -34,7 +33,13 @@ define(['Backbone', 'underscore','./TransactionList','moment'], function(Backbon
         initialize:function () {
             this.transactions = new TransactionList();
             this.transactions.url = '/families/' + this.id + '/transactions';
-        } 
+        },
+        isActive: function (currentDate) {  // determine if a family is active based on the currentDate
+            if(!this.get("date_left")) { return moment(this.get("date_joined")).isBefore(currentDate);}
+            
+            return (moment(this.get("date_joined")).isBefore(currentDate)) &&
+                           (currentDate.isBefore(moment(this.get("date_left"))));
+        }
 
     });
 

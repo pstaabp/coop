@@ -1,0 +1,3 @@
+[submodule "public/javascripts/editablegrid"]
+	path = public/javascripts/editablegrid
+	url = https://github.com/webismymind/editablegrid.git
